@@ -1,0 +1,45 @@
+name: ✨ Feature Request
+description: Propose an improvement or new capability
+title: "[FEATURE] "
+labels: ["enhancement"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Feature requests are welcome.
+        HexaGlue focuses on **compile-time guarantees, architectural clarity, and minimalism**.
+        Please describe the problem before proposing a solution.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem statement
+      description: What problem are you trying to solve?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: Describe your idea or approach.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Have you considered other approaches or workarounds?
+    validations:
+      required: false
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact and scope
+      description: Core / SPI / Plugin / Tooling / Documentation?
+    validations:
+      required: false

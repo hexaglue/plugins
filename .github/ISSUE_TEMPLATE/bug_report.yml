@@ -1,0 +1,103 @@
+name: 🐛 Bug Report
+description: Report a reproducible bug in HexaGlue
+title: "[BUG] "
+labels: ["bug"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for reporting a bug.
+
+        ⚠️ **Important**
+        HexaGlue is a compile-time tool.  
+        To be actionable, a bug report **must include a minimal, reproducible test case**.
+        Without it, maintainers may be unable to reproduce the issue and no fix can be guaranteed.
+
+  - type: input
+    id: version
+    attributes:
+      label: HexaGlue version
+      description: Version of HexaGlue used (core + plugins if applicable)
+      placeholder: "e.g. 0.2.0"
+    validations:
+      required: true
+
+  - type: textarea
+    id: build_tool
+    attributes:
+      label: Maven version
+      description: Run `mvn --version` and paste the full output
+      placeholder: |
+        Apache Maven 3.9.6 (...)
+        Maven home: /usr/share/maven
+        Java version: 17.0.9, vendor: Eclipse Adoptium
+        ...
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: java_version
+    attributes:
+      label: Java version
+      description: Run `java --version` and paste the full output
+      placeholder: |
+        openjdk 17.0.9 2023-10-17
+        OpenJDK Runtime Environment (build 17.0.9+9-Ubuntu-122.04)
+        OpenJDK 64-Bit Server VM (build 17.0.9+9-Ubuntu-122.04, mixed mode, sharing)
+      render: text
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect HexaGlue to do?
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened? Include error messages or diagnostics if any.
+    validations:
+      required: true
+
+  - type: textarea
+    id: minimal_test
+    attributes:
+      label: Minimal reproducible test case
+      description: |
+        ⚠️ REQUIRED
+
+        Provide a **minimal and self-contained test case** that reproduces the issue.
+        This can be:
+        - A small Java source snippet
+        - A CompilationTestCase using hexaglue-testing-harness
+        - Or a minimal repository / module structure
+
+        Bugs without a reproducible test case are unlikely to be fixed.
+      render: java
+    validations:
+      required: true
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Diagnostics output
+      description: Paste relevant HexaGlue diagnostics (HG-XXX-YYY codes)
+      render: text
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Any other information that might help (OS, CI, custom plugins, etc.)
+    validations:
+      required: false

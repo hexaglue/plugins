@@ -1,0 +1,29 @@
+name: ❓ Question
+description: Ask a question or request clarification
+title: "[QUESTION] "
+labels: ["question"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please note:
+        - Bugs should use the **Bug Report** template
+        - Architectural discussions may be redirected to GitHub Discussions
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: Ask your question clearly and concisely.
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Provide context if needed (code, configuration, intent).
+    validations:
+      required: false

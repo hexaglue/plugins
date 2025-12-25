@@ -1,0 +1,62 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="
+           http://maven.apache.org/POM/4.0.0
+           http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>io.hexaglue</groupId>
+    <artifactId>plugins-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+  </parent>
+
+  <artifactId>plugins-bom</artifactId>
+  <packaging>pom</packaging>
+
+  <name>HexaGlue Plugins BOM</name>
+  <description>
+    Bill of Materials for HexaGlue official plugins.
+    Provides version alignment for the HexaGlue engine and plugin ecosystem.
+  </description>
+
+  <dependencyManagement>
+    <dependencies>
+
+      <!-- Engine BOM: provides engine-* versions -->
+      <dependency>
+        <groupId>io.hexaglue</groupId>
+        <artifactId>engine-bom</artifactId>
+        <version>${project.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <!-- Official plugins -->
+
+      <dependency>
+        <groupId>io.hexaglue</groupId>
+        <artifactId>plugin-portdocs</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>io.hexaglue</groupId>
+        <artifactId>plugin-jpa-repository</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+
+      <!-- Future plugins -->
+      <!--
+      <dependency>
+        <groupId>io.hexaglue</groupId>
+        <artifactId>plugin-spring-rest</artifactId>
+        <version>${project.version}</version>
+      </dependency>
+      -->
+
+    </dependencies>
+  </dependencyManagement>
+
+</project>

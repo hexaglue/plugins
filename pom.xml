@@ -1,0 +1,394 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Plugins live in the same namespace as the engine -->
+    <groupId>io.hexaglue</groupId>
+    <artifactId>plugins-parent</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>HexaGlue Plugins</name>
+    <description>
+    Parent project for official HexaGlue plugins built on top of the HexaGlue SPI.
+    </description>
+    <url>https://github.com/hexaglue/plugins</url>
+
+    <licenses>
+        <license>
+            <name>Mozilla Public License, Version 2.0</name>
+            <url>https://www.mozilla.org/MPL/2.0/</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>jeanjerome</id>
+            <name>Jean-Jerome Levy</name>
+            <email>info@hexaglue.io</email>
+            <organization>HexaGlue</organization>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git:https://github.com/hexaglue/plugins</connection>
+        <developerConnection>scm:git:ssh://git@github.com/hexaglue/plugins.git</developerConnection>
+        <tag>HEAD</tag>
+        <url>https://github.com/hexaglue/plugins/tree/main</url>
+    </scm>
+
+    <!-- Aggregated modules -->
+    <modules>
+        <module>plugins-bom</module>
+        <module>plugin-portdocs</module>
+        <module>plugin-jpa-repository</module>
+        <!-- future plugins -->
+        <!-- <module>plugin-spring-rest</module> -->
+    </modules>
+
+    <!-- Dependency management -->
+    <dependencyManagement>
+        <dependencies>
+            <!-- Import engine BOM for engine versions -->
+            <dependency>
+                <groupId>io.hexaglue</groupId>
+                <artifactId>engine-bom</artifactId>
+                <version>${project.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Test dependencies -->
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>com.google.truth</groupId>
+                <artifactId>truth</artifactId>
+                <version>${truth.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <properties>
+        <!-- Build configuration -->
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Project directories -->
+        <hexaglue.plugins.root>${project.basedir}</hexaglue.plugins.root>
+
+        <!-- Dependency versions -->
+        <junit.version>5.14.1</junit.version>
+        <truth.version>1.4.5</truth.version>
+        <mockito.version>5.15.2</mockito.version>
+
+        <!-- Maven plugin versions -->
+        <compiler.plugin.version>3.14.1</compiler.plugin.version>
+        <enforcer.plugin.version>3.5.0</enforcer.plugin.version>
+        <surefire.plugin.version>3.5.2</surefire.plugin.version>
+        <source.plugin.version>3.3.1</source.plugin.version>
+        <javadoc.plugin.version>3.12.0</javadoc.plugin.version>
+        <gpg.plugin.version>3.2.7</gpg.plugin.version>
+        <central-publishing.plugin.version>0.6.0</central-publishing.plugin.version>
+
+        <!-- Code quality plugin versions -->
+        <spotless.plugin.version>3.1.0</spotless.plugin.version>
+
+        <!-- Code formatter versions -->
+        <palantirjavaformat.version>2.83.0</palantirjavaformat.version>
+    </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+
+                <!-- Java compilation -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>${compiler.plugin.version}</version>
+                    <configuration>
+                        <release>${maven.compiler.release}</release>
+                        <parameters>true</parameters>
+                        <!--
+                            Disable annotation processing for plugins.
+                            Plugins consume the HexaGlue SPI but do not use HexaGlue annotations.
+                            This prevents the HexaGlueProcessor from running during plugin compilation.
+                        -->
+                        <proc>none</proc>
+                    </configuration>
+                </plugin>
+
+                <!-- Enforce SPI-only dependency rule -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>${enforcer.plugin.version}</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-spi-only</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <bannedDependencies>
+                                        <excludes>
+                                            <!-- Ban engine-core in compile and runtime scopes -->
+                                            <!-- Test scope is allowed (via engine-testing-harness) -->
+                                            <exclude>io.hexaglue:engine-core:*:*:compile</exclude>
+                                            <exclude>io.hexaglue:engine-core:*:*:runtime</exclude>
+                                            <exclude>io.hexaglue:engine-core:*:*:provided</exclude>
+
+                                            <!-- Ban engine-processor in compile and runtime scopes -->
+                                            <exclude>io.hexaglue:engine-processor:*:*:compile</exclude>
+                                            <exclude>io.hexaglue:engine-processor:*:*:runtime</exclude>
+                                            <exclude>io.hexaglue:engine-processor:*:*:provided</exclude>
+                                        </excludes>
+                                        <!-- Check transitive dependencies -->
+                                        <searchTransitive>true</searchTransitive>
+                                        <message>
+                                            HexaGlue plugins must not depend on engine-core or engine-processor in compile/runtime scope.
+                                            Use engine-spi for runtime and engine-testing-harness (test scope) for testing.
+                                        </message>
+                                    </bannedDependencies>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Code formatter -->
+                <plugin>
+                    <groupId>com.diffplug.spotless</groupId>
+                    <artifactId>spotless-maven-plugin</artifactId>
+                    <version>${spotless.plugin.version}</version>
+
+                    <configuration>
+                        <java>
+                            <includes>
+                                <include>src/main/java/**/*.java</include>
+                                <include>src/test/java/**/*.java</include>
+                            </includes>
+                            <excludes>
+                                <exclude>src/main/java/io/hexaglue/annotation/**/*.java</exclude>
+                            </excludes>
+
+                            <palantirJavaFormat>
+                                <version>${palantirjavaformat.version}</version>
+                                <style>PALANTIR</style>
+                            </palantirJavaFormat>
+
+                            <licenseHeader>
+                                <file>${hexaglue.plugins.root}/doc/license/header.java</file>
+                            </licenseHeader>
+                            <importOrder />
+                            <removeUnusedImports />
+                            <forbidWildcardImports />
+                            <forbidModuleImports />
+                            <formatAnnotations />
+                        </java>
+
+                        <pom>
+                            <includes>
+                                <include>pom.xml</include>
+                                <include>**/pom.xml</include>
+                            </includes>
+
+                            <licenseHeader>
+                                <file>${hexaglue.plugins.root}/doc/license/header.xml</file>
+                                <delimiter>^\s*&lt;project</delimiter>
+                            </licenseHeader>
+
+                            <sortPom>
+                                <encoding>UTF-8</encoding>
+                                <indentAttribute>schemaLocation</indentAttribute>
+                                <nrOfIndentSpace>4</nrOfIndentSpace>
+                                <keepBlankLines>true</keepBlankLines>
+                                <expandEmptyElements>false</expandEmptyElements>
+                                <predefinedSortOrder>recommended_2008_06</predefinedSortOrder>
+                            </sortPom>
+                        </pom>
+                    </configuration>
+
+                    <executions>
+                        <execution>
+                            <id>apply-format</id>
+                            <goals>
+                                <goal>apply</goal>
+                            </goals>
+                            <phase>process-sources</phase>
+                        </execution>
+                    </executions>
+                </plugin>
+
+                <!-- Test execution -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${surefire.plugin.version}</version>
+                </plugin>
+
+                <!-- Sources & Javadoc for Maven Central -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>${source.plugin.version}</version>
+                </plugin>
+
+                <!-- Javadoc generation -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-javadoc-plugin</artifactId>
+                    <version>${javadoc.plugin.version}</version>
+                    <configuration>
+                        <!-- Visibility level for javadoc generation -->
+                        <show>private</show>
+
+                        <!-- Source encoding -->
+                        <encoding>${project.build.sourceEncoding}</encoding>
+                        <docencoding>${project.build.sourceEncoding}</docencoding>
+                        <charset>${project.build.sourceEncoding}</charset>
+
+                        <!-- Include @author and @version tags -->
+                        <author>true</author>
+                        <version>true</version>
+
+                        <!-- Disable strict doclint for Java 8+ -->
+                        <doclint>none</doclint>
+
+                        <!-- Reduce output verbosity -->
+                        <quiet>true</quiet>
+
+                        <!-- Don't fail the build on javadoc errors -->
+                        <failOnError>false</failOnError>
+                        <failOnWarnings>false</failOnWarnings>
+
+                        <!-- Window and document titles -->
+                        <windowtitle>Hexaglue Plugins ${project.version}</windowtitle>
+                        <doctitle>Hexaglue Plugins ${project.version} Documentation</doctitle>
+
+                        <!-- Footer -->
+                        <bottom><![CDATA[Copyright &#169; {currentYear} Hexaglue. All rights reserved.]]></bottom>
+
+                        <!-- Link to external javadocs -->
+                        <links>
+                            <link>https://docs.oracle.com/en/java/javase/17/docs/api/</link>
+                        </links>
+
+                        <!-- Additional options for Java 9+ -->
+                        <additionalOptions>
+                            <additionalOption>-html5</additionalOption>
+                        </additionalOptions>
+
+                        <!-- CSS -->
+                        <stylesheetfile>${hexaglue.plugins.root}/doc/javadoc/stylesheetfile.css</stylesheetfile>
+                    </configuration>
+                </plugin>
+
+                <!-- Maven Central publishing -->
+                <plugin>
+                    <groupId>org.sonatype.central</groupId>
+                    <artifactId>central-publishing-maven-plugin</artifactId>
+                    <version>${central-publishing.plugin.version}</version>
+                </plugin>
+
+                <!-- GPG signing -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-gpg-plugin</artifactId>
+                    <version>${gpg.plugin.version}</version>
+                </plugin>
+
+            </plugins>
+        </pluginManagement>
+
+        <!-- Active plugins for all modules -->
+        <plugins>
+            <!-- Enforce SPI-only dependency rule for all plugin modules -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- Release profile for Maven Central deployment -->
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <!-- Generate sources JAR -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-sources</id>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Generate Javadoc JAR -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>attach-javadocs</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Sign artifacts with GPG -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <!-- Publish to Maven Central -->
+                    <plugin>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <extensions>true</extensions>
+                        <configuration>
+                            <deploymentName>HexaGlue Plugins ${project.version}</deploymentName>
+                            <publishingServerId>central-ossrh</publishingServerId>
+                            <autoPublish>true</autoPublish>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
+</project>

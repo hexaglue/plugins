@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  This Source Code Form is part of the HexaGlue project.
+  Copyright (c) 2025 Scalastic
+
+  This Source Code Form is subject to the terms of the Mozilla Public
+  License, v. 2.0. If a copy of the MPL was not distributed with this
+  file, You can obtain one at https://mozilla.org/MPL/2.0/.
+
+  Commercial licensing options are available for organizations wishing
+  to use HexaGlue under terms different from the MPL 2.0.
+  Contact: info@hexaglue.io
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    
+        <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.hexaglue</groupId>
+        <artifactId>plugins-parent</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>plugin-portdocs</artifactId>
+    <packaging>jar</packaging>
+
+    <name>HexaGlue Plugin – Port Documentation</name>
+    <description>
+    Generates documentation for application ports based on the HexaGlue domain analysis.
+  </description>
+
+    <properties>
+        <!-- Override root directory for license plugin (one level up) -->
+        <hexaglue.plugins.root>${project.basedir}/..</hexaglue.plugins.root>
+    </properties>
+
+    <dependencies>
+        <!-- HexaGlue SPI - The only necessary dependency -->
+        <dependency>
+            <groupId>io.hexaglue</groupId>
+            <artifactId>engine-spi</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>io.hexaglue</groupId>
+            <artifactId>engine-testing-harness</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    <!-- JUnit Jupiter for plugin tests -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    </dependencies>
+
+</project>
