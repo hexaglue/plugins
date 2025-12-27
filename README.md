@@ -3,7 +3,7 @@
 **Official infrastructure generation plugins for HexaGlue Engine.**
 
 <div align="center">
-  <img src="doc/logo-hexaglue.png" alt="HexaGlue" width="400">
+  <img src="doc/logo-hexaglue-plugins.png" alt="HexaGlue" width="400">
 </div>
 
 [![CI](https://github.com/hexaglue/plugins/actions/workflows/ci.yml/badge.svg)](https://github.com/hexaglue/plugins/actions/workflows/ci.yml)
